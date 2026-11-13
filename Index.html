@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d12">
+<title>MatchRadar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d12;color:#f4f7fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:20px 16px 100px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 25px}
+.logo{font-size:23px;font-weight:900;letter-spacing:1px}
+.logo span{color:#b8f34a}
+.tag{font-size:9px;color:#8996a5;letter-spacing:1.5px;margin-top:4px}
+.avatar{border:1px solid #35404c;border-radius:50%;padding:10px;color:#b8f34a;font-weight:bold}
+.hero{background:linear-gradient(130deg,#18251b,#121922);padding:23px;border-radius:20px;margin-bottom:28px}
+.eyebrow{font-size:10px;color:#b8f34a;font-weight:800;letter-spacing:2px}
+h1{font-size:34px;line-height:1.08;margin:12px 0 8px}
+.hero p{color:#9ba8b5;font-size:12px}
+.section{display:flex;justify-content:space-between;align-items:center;margin:24px 2px 13px}
+.section h2{font-size:13px;letter-spacing:1px}
+.preview{color:#d6a74a;font-size:9px;font-weight:bold}
+.filters{display:flex;gap:8px;overflow:auto;padding-bottom:15px}
+.filter{background:#121922;border:1px solid #26313d;border-radius:20px;padding:10px 15px;color:#8996a5;font-size:10px;font-weight:bold;white-space:nowrap}
+.filter.active{background:#b8f34a;color:#11170a;border-color:#b8f34a}
+.card{background:#121922;border:1px solid #26313d;border-radius:16px;padding:16px;margin-bottom:12px}
+.top{display:flex;justify-content:space-between;color:#8996a5;font-size:9px;font-weight:bold;letter-spacing:1px}
+.live{color:#ff626d}
+.match{display:flex;justify-content:space-between;align-items:center;margin:18px 0}
+.teams{font-size:17px;font-weight:800;line-height:2}
+.right{display:flex;align-items:center;gap:12px}
+.result{font-size:17px;font-weight:900}
+.score{width:58px;height:58px;border:2px solid #b8f34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.number{font-size:19px;font-weight:900;color:#b8f34a}
+.outof{font-size:7px;color:#8996a5}
+.bottom{border-top:1px solid #26313d;padding-top:12px;display:flex;justify-content:space-between;color:#8996a5;font-size:10px}
+.bottom strong{color:#b8f34a}
+.detail{display:none;background:#18222d;border-radius:12px;padding:14px;margin-top:13px;font-size:11px;line-height:1.8;color:#aab5c0}
+.card.open .detail{display:block}
+.card{cursor:pointer}
+.note{font-size:10px;color:#657180;line-height:1.6;margin-top:20px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#121922;border-top:1px solid #26313d;display:flex;justify-content:space-around;padding:17px 5px calc(17px + env(safe-area-inset-bottom))}
+nav span{font-size:9px;color:#8996a5;font-weight:bold;letter-spacing:.5px}
+nav .selected{color:#b8f34a}
+.empty{text-align:center;color:#8996a5;padding:30px}
+</style>
+</head>
+<body>
+<header>
+<div>
+<div class="logo">MATCH<span>RADAR</span></div>
+<div class="tag">FIND THE MATCH WORTH WATCHING</div>
+</div>
+<div class="avatar">MR</div>
+</header>
+
+<section class="hero">
+<div class="eyebrow">YOUR FOOTBALL RADAR</div>
+<h1>Find the<br>good games.</h1>
+<p>One score. The best matches to watch.</p>
+</section>
+
+<div class="section">
+<h2>TOP MATCHES</h2>
+<div class="preview">DEMO DATA</div>
+</div>
+
+<div class="filters">
+<button class="filter active" data-filter="ALL">ALL</button>
+<button class="filter" data-filter="LIVE">LIVE</button>
+<button class="filter" data-filter="UPCOMING">UPCOMING</button>
+<button class="filter" data-filter="FT">FINISHED</button>
+</div>
+
+<main id="matches"></main>
+
+<p class="note">MatchRadar prototype. These are fictional preview fixtures and illustrative ratings, not real live football data. Real fixtures and statistics will be connected in the next stage.</p>
+
+<nav>
+<span class="selected">RADAR</span>
+<span>FIXTURES</span>
+<span>SAVED</span>
+<span>SETTINGS</span>
+</nav>
+
+<script>
+const games=[
+{league:"PREMIER LEAGUE",home:"Arsenal",away:"Liverpool",time:"67' LIVE",state:"LIVE",score:"2 - 2",rating:94,reason:"High attacking activity and a closely contested match."},
+{league:"CHAMPIONS LEAGUE",home:"PSG",away:"Bayern Munich",time:"20:00",state:"UPCOMING",score:"",rating:91,reason:"High attacking potential and major European occasion."},
+{league:"BUNDESLIGA",home:"Leverkusen",away:"Frankfurt",time:"19:30",state:"UPCOMING",score:"",rating:86,reason:"Two attack-minded teams with strong scoring potential."},
+{league:"LA LIGA",home:"Real Sociedad",away:"Girona",time:"20:00",state:"UPCOMING",score:"",rating:82,reason:"An interesting tactical matchup."},
+{league:"SERIE A",home:"Bologna",away:"Atalanta",time:"FINISHED",state:"FT",score:"1 - 1",rating:76,reason:"A competitive game with an even result."}
+];
+
+function render(filter="ALL"){
+const list=games.filter(g=>filter==="ALL"||g.state===filter).sort((a,b)=>b.rating-a.rating);
+document.getElementById("matches").innerHTML=list.length?list.map((g,i)=>`
+<article class="card" onclick="this.classList.toggle('open')">
+<div class="top"><span>${g.league}</span><span class="${g.state==="LIVE"?"live":""}">${g.time}</span></div>
+<div class="match">
+<div class="teams">${g.home}<br>${g.away}</div>
+<div class="right">${g.score?`<div class="result">${g.score}</div>`:""}
+<div class="score"><div class="number">${g.rating}</div><div class="outof">/ 100</div></div>
+</div>
+</div>
+<div class="bottom"><span>${g.rating>=85?"High entertainment potential":"Worth keeping an eye on"}</span><strong>VIEW DETAILS ↓</strong></div>
+<div class="detail"><b>WHY THIS MATCH?</b><br>${g.reason}<br><br><b>ENTERTAINMENT RATING</b><br>${g.rating}/100<br><br>Prototype rating. Real match statistics will drive the rating in a later version.</div>
+</article>`).join(""):'<div class="empty">No matches in this filter.</div>';
+}
+document.querySelectorAll(".filter").forEach(button=>{
+button.addEventListener("click",()=>{
+document.querySelectorAll(".filter").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+render(button.dataset.filter);
+});
+});
+render();
+</script>
+</body>
+</html>
